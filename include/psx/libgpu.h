@@ -2,6 +2,10 @@
 #define LIBGPU_H
 
 #include "types.h"
+
+#if !defined(__cplusplus) && !defined(static_assert)
+#include <assert.h> /* static_assert, from C11 on */
+#endif
 #include "PsyX/common/pgxp_defs.h"
 
 extern	int (*GPU_printf)(const char *fmt, ...);
@@ -329,7 +333,7 @@ typedef struct _RECT16 {
 
 #if USE_EXTENDED_PRIM_POINTERS
 
-#if defined(_M_X64) || defined(__amd64__)
+#if defined(_M_X64) || defined(__amd64__) || defined(__aarch64__) || defined(__LP64__)
 
 #define DECLARE_P_ADDR \
 		uintptr_t addr; \
@@ -841,7 +845,7 @@ extern u_short GetClut(int x, int y);
 extern u_short GetTPage(int tp, int abr, int x, int y);
 extern u_short LoadClut(u_long*clut, int x, int y);
 extern u_short LoadClut2(u_long*clut, int x, int y);
-extern u_short LoadTPage(u_long*pix, int tp, int abr, int x, int y, int w, int h);
+extern u_short LoadTPage(u_int* pix, int tp, int abr, int x, int y, int w, int h);
 extern void *NextPrim(void *p);
 extern void AddPrim(void *ot, void *p);
 extern void AddPrims(void *ot, void *p0, void *p1);

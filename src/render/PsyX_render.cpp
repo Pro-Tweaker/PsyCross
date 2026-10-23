@@ -45,6 +45,10 @@ extern "C" {
 
 extern SDL_Window* g_window;
 
+#if defined(__ANDROID__)
+#include "../pad/PsyX_touch.h"
+#endif
+
 
 #define MAX_NUM_VERTEX_BUFFERS		(2)
 #define PSX_SCREEN_ASPECT	(240.0f / 320.0f)			// PSX screen is mapped always to this aspect
@@ -299,10 +303,8 @@ int GR_InitialiseGLContext(char* windowName, int fullscreen)
 	SDL_DisplayMode displayMode;
 	if (SDL_GetCurrentDisplayMode(0, &displayMode) == 0)
 	{
-		screenWidth = displayMode.w;
-		windowWidth = displayMode.w;
-		screenHeight = displayMode.h;
-		windowHeight = displayMode.h;
+		g_windowWidth = displayMode.w;
+		g_windowHeight = displayMode.h;
 	}
 #endif
 
@@ -722,21 +724,18 @@ int GR_Shader_CheckProgramStatus(GLuint program)
 ShaderID GR_Shader_Compile(const char* source, int isPsxShader)
 {
 #if defined(ES2_SHADERS)
-	const char* GLSL_HEADER_VERT = R"(
-		#version 100
+	const char* GLSL_HEADER_VERT = R"(#version 100
 		precision lowp  int;
 		precision highp float;
 	)";
 
-	const char* GLSL_HEADER_FRAG = R"(
-		#version 100
+	const char* GLSL_HEADER_FRAG = R"(#version 100
 		precision lowp  int;
 		precision highp float;
 		#define fragColor gl_FragColor
 	)";
 #elif defined(ES3_SHADERS)
-	const char* GLSL_HEADER_VERT = R"(
-		#version 300 es
+	const char* GLSL_HEADER_VERT = R"(#version 300 es
 		precision lowp  int;
 		precision highp float;
 		#define varying   out
@@ -744,8 +743,7 @@ ShaderID GR_Shader_Compile(const char* source, int isPsxShader)
 		#define texture2D texture
 	)";
 
-	const char* GLSL_HEADER_FRAG = R"(
-		#version 300 es
+	const char* GLSL_HEADER_FRAG = R"(#version 300 es
 		precision lowp  int;
 		precision highp float;
 		#define varying     in
@@ -753,8 +751,7 @@ ShaderID GR_Shader_Compile(const char* source, int isPsxShader)
 		out vec4 fragColor;
 	)";
 #else
-	const char* GLSL_HEADER_VERT = R"(
-		#version 140
+	const char* GLSL_HEADER_VERT = R"(#version 140
 		precision lowp  int;
 		precision highp float;
 		#define varying   out
@@ -762,8 +759,7 @@ ShaderID GR_Shader_Compile(const char* source, int isPsxShader)
 		#define texture2D texture
 	)";
 
-	const char* GLSL_HEADER_FRAG = R"(
-		#version 140
+	const char* GLSL_HEADER_FRAG = R"(#version 140
 		precision lowp  int;
 		precision highp float;
 		#define varying     in
@@ -1709,6 +1705,9 @@ void GR_UpdateVRAM()
 void GR_SwapWindow()
 {
 #if defined(RENDERER_OGL) || defined(RENDERER_OGLES)
+#if defined(__ANDROID__)
+	PsyX_Touch_Draw();
+#endif
 	SDL_GL_SwapWindow(g_window);
 #endif
 
