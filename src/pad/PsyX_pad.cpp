@@ -26,6 +26,10 @@ int						g_cfg_controllerToSlotMapping[MAX_CONTROLLERS] = { -1, -1 };
 PsyXController			g_controllers[MAX_CONTROLLERS];
 const u_char*			g_sdlKeyboardState = NULL;
 
+#if defined(__ANDROID__)
+#include "PsyX_touch.h"
+#endif
+
 u_short PsyX_Pad_UpdateKeyboardInput();
 void	PsyX_Pad_UpdateGameControllerInput(SDL_GameController* cont, LPPADRAW pad);
 
@@ -420,6 +424,10 @@ u_short PsyX_Pad_UpdateKeyboardInput()
 
 	if (g_sdlKeyboardState[mapping.kc_start])//START
 		ret &= ~0x8;
+
+#if defined(__ANDROID__)
+	ret &= PsyX_Touch_GetButtons();
+#endif
 
 	return ret;
 }
