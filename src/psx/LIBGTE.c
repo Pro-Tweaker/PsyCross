@@ -25,14 +25,14 @@
 #define MAX(a,b)	fst_max(a,b)
 #endif
 
-inline int fst_min(int a, int b)
+static inline int fst_min(int a, int b)
 {
 	int diff = a - b;
 	int dsgn = diff >> 31;
 	return b + (diff & dsgn);
 }
 
-inline int fst_max(int a, int b)
+static inline int fst_max(int a, int b)
 {
 	int diff = a - b;
 	int dsgn = diff >> 31;
